@@ -9,4 +9,12 @@ public class Chip {
     public void setRow(int r) {
         row = r;
     }
+
+    public int getRow() {
+        return row;
+    }
+
+    public int getColumn() {
+        return column;
+    }
 }
