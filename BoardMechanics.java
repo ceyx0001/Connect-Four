@@ -9,19 +9,25 @@ public class BoardMechanics {
     LinkedList<Chip> slopeUp;
 
     BoardMechanics() {
-        for(int i = 0; i < 7; i++) {
+        for (int i = 0; i < 7; i++) {
             board.put(i, new LinkedList<Chip>());
         }
     }
 
-    public void insertCoin(Chip chip, int column) {
+    public String insertCoin(Chip chip, int column, String turn) {
         if (board.get(column).size() == 6) {
             System.out.println("No spaces");
+            return turn;
         } else {
             chip.setRow(board.get(column).size());
             board.get(column).add(chip);
-            board.put(column, board.get(column));
+            if (turn.equals("Red")) {
+                turn = "Yellow";
+            } else if (turn.equals("Yellow")) {
+                turn = "Red";
+            }
         }
+        return turn;
     }
 
     public void connectChips(Chip chip) {

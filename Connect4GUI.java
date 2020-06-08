@@ -7,8 +7,6 @@ import java.awt.*;
 
 public class Connect4GUI extends JFrame implements ActionListener {
 	JFrame frame;
-	Chip yellowChip = new Chip("yellow");
-	Chip redChip = new Chip("red");
 	HashMap<Integer, LinkedList<Chip>> board = new HashMap<Integer, LinkedList<Chip>>();
 	BoardMechanics gameBoard;
 
@@ -29,9 +27,7 @@ public class Connect4GUI extends JFrame implements ActionListener {
 	/**
 	 * Create the application.
 	 */
-	final int red = 0;
-	final int yellow = 1;
-	int turn;
+	String turn = "";
 	JPanel selectionPanel = new JPanel();
 	JButton single = new JButton("Single Player");
 	JButton multi = new JButton("Multiplayer");
@@ -112,8 +108,8 @@ public class Connect4GUI extends JFrame implements ActionListener {
 		player1.setAlignmentX(Component.CENTER_ALIGNMENT);
 		player1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				turn = red;
-				displayColor.setText("Red");
+				turn = "Red";
+				displayColor.setText(turn);
 				createBoard();
 			}
 		});
@@ -125,8 +121,8 @@ public class Connect4GUI extends JFrame implements ActionListener {
 		player2.setAlignmentX(Component.CENTER_ALIGNMENT);
 		player2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				turn = yellow;
-				displayColor.setText("Yellow");
+				turn = "Yellow";
+				displayColor.setText(turn);
 				createBoard();
 			}
 		});
@@ -147,20 +143,6 @@ public class Connect4GUI extends JFrame implements ActionListener {
 
 		selectionPanel.revalidate();
 		selectionPanel.repaint();
-	}
-
-	public void changeTurn() {
-		if (turn == red)
-		{
-			turn = yellow;
-			displayColor.setText("Yellow");
-		} else if (turn == yellow)
-		{
-			turn = red;
-			displayColor.setText("Red");
-		}
-		gamePanel.revalidate();
-		gamePanel.repaint();
 	}
 
 	public void createBoard() {
@@ -189,14 +171,13 @@ public class Connect4GUI extends JFrame implements ActionListener {
 		int x = 90;
 		int y = 11;
 		for (int i = 0; i < 7; i++) {
-			drop[i] = new JButton();
+			drop[i] = new JButton(Integer.toString(i + 1));
 			drop[i].setBounds(x, y, width, height);
-			redChip.setColumn(i);
 			drop[i].addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					gameBoard.insertCoin(redChip, redChip.getColumn());
-					changeTurn();
-					System.out.println(turn);
+					Chip newChip = new Chip(turn);
+					turn = gameBoard.insertCoin(newChip, Integer.parseInt(e.getActionCommand()), turn);
+					displayColor.setText(turn);
 				}
 			});
 			gamePanel.add(drop[i]);
