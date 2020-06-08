@@ -29,6 +29,9 @@ public class Connect4GUI extends JFrame implements ActionListener {
 	/**
 	 * Create the application.
 	 */
+	final int red = 0;
+	final int yellow = 1;
+	int turn;
 	JPanel selectionPanel = new JPanel();
 	JButton single = new JButton("Single Player");
 	JButton multi = new JButton("Multiplayer");
@@ -48,6 +51,8 @@ public class Connect4GUI extends JFrame implements ActionListener {
 	JPanel gamePanel = new JPanel();
 	JLabel boardImage = new JLabel("");
 	JButton[] drop = new JButton[7];
+	JLabel displayColor = new JLabel("");
+	JLabel displayTurn = new JLabel("Turn:");
 
 	public void titlePage() {
 		selectionPanel.revalidate();
@@ -107,6 +112,8 @@ public class Connect4GUI extends JFrame implements ActionListener {
 		player1.setAlignmentX(Component.CENTER_ALIGNMENT);
 		player1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				turn = red;
+				displayColor.setText("Red");
 				createBoard();
 			}
 		});
@@ -118,6 +125,8 @@ public class Connect4GUI extends JFrame implements ActionListener {
 		player2.setAlignmentX(Component.CENTER_ALIGNMENT);
 		player2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				turn = yellow;
+				displayColor.setText("Yellow");
 				createBoard();
 			}
 		});
@@ -140,6 +149,20 @@ public class Connect4GUI extends JFrame implements ActionListener {
 		selectionPanel.repaint();
 	}
 
+	public void changeTurn() {
+		if (turn == red)
+		{
+			turn = yellow;
+			displayColor.setText("Yellow");
+		} else if (turn == yellow)
+		{
+			turn = red;
+			displayColor.setText("Red");
+		}
+		gamePanel.revalidate();
+		gamePanel.repaint();
+	}
+
 	public void createBoard() {
 		frame.getContentPane().add(gamePanel, BorderLayout.CENTER);
 		gamePanel.setBackground(new Color(240, 240, 240));
@@ -152,6 +175,15 @@ public class Connect4GUI extends JFrame implements ActionListener {
 		boardImage.setIcon(new ImageIcon("Images\\connectboard.png"));
 		gamePanel.add(boardImage);
 
+		displayTurn.setBackground(new Color(240, 240, 240));
+		displayTurn.setFont(new Font("Roboto", Font.PLAIN, 28));
+		displayTurn.setBounds(120, 600, 70, 60);
+		gamePanel.add(displayTurn);
+
+		displayColor.setFont(new Font("Roboto", Font.PLAIN, 28));
+		displayColor.setBounds(200, 600, 250, 60);
+		gamePanel.add(displayColor);
+
 		int height = 100;
 		int width = 90;
 		int x = 90;
@@ -163,6 +195,8 @@ public class Connect4GUI extends JFrame implements ActionListener {
 			drop[i].addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					gameBoard.insertCoin(redChip, redChip.getColumn());
+					changeTurn();
+					System.out.println(turn);
 				}
 			});
 			gamePanel.add(drop[i]);
