@@ -1,68 +1,88 @@
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.awt.color.*;
+import java.awt.*;
+import javax.swing.*;
+public class GameBoard extends JPanel{
 
-public class GameBoard {
-    private HashMap<Integer, LinkedList<Chip>> board = new HashMap<Integer, LinkedList<Chip>>();
-    private LinkedList<LinkedList<Chip>> queue = new LinkedList<LinkedList<Chip>>();
-    LinkedList<Chip> vertical;
-    LinkedList<Chip> horizontal;
-    LinkedList<Chip> slopeDown;
-    LinkedList<Chip> slopeUp;
+	private JFrame frame1;
 
-    public void insertCoin(Chip chip, int column) {
-        LinkedList<Chip> temp = board.get(column);
-        if (temp.size() == 6) {
-            System.out.println("No spaces");
-        } else {
-            temp.add(chip);
-            chip.setRow(temp.size());
-            board.put(column, temp);
-        }
-    }
+	/**
+	 * Launch the application.
+	 */
+	
 
-    public void connectChips(Chip chip) {
-        int row = chip.getRow();
-        int column = chip.getColumn();
-        int left = column - 3;
-        int right = column + 3;
+	/**
+	 * Create the application.
+	 */
+	
+	JPanel panel = new JPanel();
+	JLabel board = new JLabel("");
+	JButton[] drop = new JButton[7];
+	JLabel[][] chipSlots = new JLabel[7][6];
+	JPanel chips = new JPanel();
+	
+	public GameBoard() {
+		frame1 = new JFrame();
+		frame1.setBounds(100, 100, 800, 700);
+		frame1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame1.getContentPane().setLayout(new BorderLayout(0, 0));
+		
+		
+		panel.setBackground(new Color(240, 240, 240));
+		frame1.getContentPane().add(panel, BorderLayout.CENTER);
+		panel.setLayout(null);
+		
+		
+		board.setBounds(85, 110, 640, 480);
+		board.setIcon(new ImageIcon("C:\\Users\\Administrator\\eclipse-workspace\\CS\\Images\\connectboard.png"));
+		panel.add(board);
+		
+		chips.setLayout(new GridLayout(1, 0, 0, 0));
+		chips.setBounds(85, 110, 640, 480);
+		panel.add(chips);
+		
+		
+		int height = 100;
+		int width = 90;
+		int x = 90;
+		int y = 11;
+		for (int i = 0;i<7;i++)
+		{
+			drop[i] = new JButton();
+			drop[i].setBounds(x,y,width,height);
+			panel.add(drop[i]);
+			drop[i].setOpaque(false);
+			drop[i].setContentAreaFilled(false);
+			/*drop[i].setBorderPainted(false);*/
+			x+=90;
+		}
 
-        vertical = board.get(column);
-        horizontal = new LinkedList<Chip>();
-        slopeDown = new LinkedList<Chip>();
-        slopeUp = new LinkedList<Chip>();
 
-        addHorizontal(horizontal, column, row);
-        addSlope(slopeUp, row, column, 1);
-    }
+		
+		
+		frame1.setResizable(false);
+	}
 
-    // add entire row, start at col - 3...
-
-    public void addHorizontal(LinkedList<Chip> horizontal, int column, int row) {
-        int c = 0;
-        horizontal.add(board.get(c++).get(row));
-    }
-
-    public void addSlope(LinkedList<Chip> slope, int row, int column, int dir) {
-        int r = row;
-        int c = column;
-        for (int i = 0; i < 4; i++) {
-            if (r < 6 || c < 0) {
-                break;
-            }
-            LinkedList<Chip> temp = board.get(c--);
-            slope.add(temp.get(r + dir));
-        }
-
-        r = row;
-        c = column;
-        for (int i = 0; i < 4; i++) {
-            if (r < 6 || c > 7) {
-                break;
-            }
-            LinkedList<Chip> temp = board.get(c++);
-            slope.add(temp.get(r + dir));
-        }
-        addSlope(slopeDown, row, column, -1);
-    }
+		
+	
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	
+	
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() 
+		{
+			public void run() 
+			{
+				try 
+				{
+					gameBoard window = new gameBoard ();
+					window.frame1.setVisible(true);
+				} catch (Exception e) 
+				{
+					e.printStackTrace();
+				}
+			}
+		});
+	}
 }

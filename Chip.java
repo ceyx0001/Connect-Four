@@ -1,13 +1,18 @@
 public class Chip {
-    int type, column, row;
-    Chip(int t, int c) {
+    String type;
+    int column, row;
+    Chip(String t) {
         type = t;
-        column = c;
+        column = -1;
         row = -1;
     }
 
     public void setRow(int r) {
         row = r;
+    }
+
+    public void setColumn(int c) {
+        column = c;
     }
 
     public int getRow() {
