@@ -19,6 +19,7 @@ public class Connect4GUI extends JFrame {
 	private Color yellow = new Color(255, 255, 0);
 	private Color blue = new Color(87, 160, 211);
 	BoardMechanics gameBoard;
+	DrawBoard goodBoard;
 
 	public static void main(String[] args) {
 
@@ -59,7 +60,6 @@ public class Connect4GUI extends JFrame {
 	JLabel boardImage = new JLabel("");
 	JButton[] drop = new JButton[7];
 	Dimension d = new Dimension(700, 600);
-	DrawBoard goodBoard = new DrawBoard(d);
 	Font verdana = new Font("Verdana", 1, 17);
 
 	public void titlePage() {
@@ -156,8 +156,10 @@ public class Connect4GUI extends JFrame {
 	}
 
 	public void createBoard() {
+		goodBoard = new DrawBoard(d);
 		frame.add(goodBoard);
 		frame.remove(selectionPanel);
+		frame.repaint();
 		frame.pack();
 		frame.setVisible(true);
 	}
@@ -248,13 +250,14 @@ public class Connect4GUI extends JFrame {
 							frame.add(selectionPanel);
 							frame.revalidate();
 							frame.repaint();
+							active = true;
+							click();
 						}
 					});
 					active = false;
 					goodBoard.add(finishGame);
 					frame.revalidate();
 					frame.repaint();
-					active = true;
 				}
 
 				if (row < 0) {
