@@ -1,5 +1,3 @@
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -10,19 +8,38 @@ public class BoardMechanics {
     final int R = 6;
     final int C = 7;
     Chip[][] board;
+    /*int[][] boardRed;
+    int[][] boardYellow;
+    long TOP = 0b0000000001000000100000010000001000000000000000000L;
+    private static long[] bitBoard = new long[2];
+    private static int[] height = {0, 0, 0, 0, 0, 0, 0};*/
 
     public BoardMechanics() {
         board = new Chip[R][C];
+        /*boardRed = new int[R][C];
+        boardYellow = new int[R][C];*/
     }
 
 
     public void insertCoin(Chip chip, int row, int column, int turn) {
         board[row][column] = chip;
-        /*if (checkWin(column, row, turn))
-        {
-            System.out.println("Player "+turn+" wins!");
+        /*long move = 1L << height[column]++;
+        bitBoard[turn-1] ^= move; 
+        if(isWin(bitBoard[turn-1])) {
+            System.out.println(true);
         }*/
     }
+
+    /*public boolean isWin(long bitboard) {
+        int[] directions = { 1, 7, 6, 8 };
+        long bb;
+        for (int direction : directions) {
+            bb = bitboard & (bitboard >> direction);
+            if ((bb & (bb >> (2 * direction))) != 0)
+                return true;
+        }
+        return false;
+    }*/
 
     public boolean checkWin(int initialX, int initialY, int turn) {
         ArrayList<Integer>horizontal= new ArrayList<Integer>();
@@ -69,12 +86,4 @@ public class BoardMechanics {
         }
         return false;
     }
-
 }
-
-        /*
-        int[] x = { -1, -1,-1, 0, 0, 1, 1, 1 };
-        int[] y = { -1,  0, 1,-1, 1,-1, 0, 1 };
-                    sd  h   su v  v  su h  sd
-                    0   1   2  3  4  5  6  7
-        */
