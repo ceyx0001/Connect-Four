@@ -1,5 +1,6 @@
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class BoardMechanics {
@@ -14,35 +15,51 @@ public class BoardMechanics {
         board = new Chip[R][C];
     }
 
+
     public void insertCoin(Chip chip, int row, int column, int turn) {
         board[row][column] = chip;
-        winner(column, row, turn);
+        /*if (checkWin(column, row, turn))
+        {
+            System.out.println("Player "+turn+" wins!");
+        }*/
     }
 
-    public void winner(int initialX, int initialY, int turn) {
-        connectedFour.add(board[initialY][initialX]);
+    public boolean checkWin(int initialX, int initialY, int turn) {
+        ArrayList<Integer>horizontal= new ArrayList<Integer>();
+        ArrayList<Integer>vertical= new ArrayList<Integer>();
+        ArrayList<Integer>slopeDown= new ArrayList<Integer>();
+        ArrayList<Integer>slopeUp= new ArrayList<Integer>();
+        
+        horizontal.add(board[initialY][initialX].getType());
+        vertical.add(board[initialY][initialX].getType());
+        slopeDown.add(board[initialY][initialX].getType());
+        slopeUp.add(board[initialY][initialX].getType());
 
         for (int directions = 0; directions < 8; directions++) {
-            int k;
             int xDir = initialX + x[directions];
             int yDir = initialY + y[directions];
-            for (k = 1; k < 4; k++) {
+            for (int k = 1; k < 4; k++) {
                 if (xDir >= C || xDir < 0 || yDir >= R || yDir < 0) {
                     break;
                 }
                 if (board[yDir][xDir] != null) {
-                    System.out.println(yDir + " " + xDir);
                     if (turn != board[yDir][xDir].getType()) {
                         break;
                     }
+
                     if (directions == 0 || directions == 7) {
-                        connectedFour.add(board[yDir][xDir]);
+                        slopeDown.add(board[yDir][xDir].getType());
                     } else if (directions == 1 || directions == 6) {
-                        connectedFour.add(board[yDir][xDir]);
+                        horizontal.add(board[yDir][xDir].getType());
                     } else if (directions == 2 || directions == 5) {
-                        connectedFour.add(board[yDir][xDir]);
+                        slopeUp.add(board[initialY][initialX].getType());
                     } else if (directions == 3 || directions == 4) {
-                        connectedFour.add(board[yDir][xDir]);
+                        vertical.add(board[initialY][initialX].getType());
+                    }
+                    
+                    if (horizontal.size() == 4|| vertical.size() == 4 || slopeUp.size() == 4 || slopeDown.size() == 4)
+                    {
+                        return true;
                     }
 
                     xDir += x[directions];
@@ -50,7 +67,14 @@ public class BoardMechanics {
                 }
             }
         }
-        connectedFour.clear();
+        return false;
     }
 
 }
+
+        /*
+        int[] x = { -1, -1,-1, 0, 0, 1, 1, 1 };
+        int[] y = { -1,  0, 1,-1, 1,-1, 0, 1 };
+                    sd  h   su v  v  su h  sd
+                    0   1   2  3  4  5  6  7
+        */

@@ -55,6 +55,8 @@ public class Connect4GUI extends JFrame {
 	JPanel gamePanel = new JPanel();
 	JLabel boardImage = new JLabel("");
 	JButton[] drop = new JButton[7];
+	Dimension d = new Dimension (700,600);
+	DrawBoard goodBoard = new DrawBoard(d);
 
 	public void titlePage() {
 		selectionPanel.revalidate();
@@ -150,7 +152,7 @@ public class Connect4GUI extends JFrame {
 	}
 
 	public void createBoard() {
-		frame.add(new DrawBoard(frame.getSize()));
+		frame.add(goodBoard);
 		frame.remove(selectionPanel);
 		frame.pack();
 		frame.setVisible(true);
@@ -217,7 +219,13 @@ public class Connect4GUI extends JFrame {
 
 			newGB.setFont (myFont);
 			newGB.setColor(white);
-			newGB.drawString(turn + "'s Turn", 10, 20);
+			if (turn == 1)
+			{
+				newGB.drawString("Red's Turn", 10, 20);
+			} else
+			{
+				newGB.drawString("Yellow's Turn", 10, 20);
+			}
 		}
 
 		public void mousePressed(MouseEvent e) {
@@ -225,6 +233,15 @@ public class Connect4GUI extends JFrame {
 			int y = e.getY();
 			int col = (x - 140) / cellWidth;
 			int row = getOpenSlot(col);
+
+			if (gameBoard.checkWin(col, row, turn))
+        	{
+				System.out.println("Player "+turn+" wins!");
+				goodBoard.removeAll();
+				goodBoard.revalidate();
+				goodBoard.repaint();
+			}
+
 			if (row < 0) {
 				System.out.println("Full Column");
 			} else {
@@ -237,6 +254,7 @@ public class Connect4GUI extends JFrame {
 				}
 				// System.out.println(row + " " + col);
 			}
+
 			repaint();
 		}
 
@@ -264,12 +282,13 @@ public class Connect4GUI extends JFrame {
 					return row;
 				}
 			}
+			
 			if (turn == 1) {
-				System.out.println(row + " " + col);
+
 				Chip redChip = new Chip(1, row, col);
 				gameBoard.insertCoin(redChip, row, col, turn);
 			} else {
-				System.out.println(row + " " + col);
+
 				Chip yellowChip = new Chip(2, row, col);
 				gameBoard.insertCoin(yellowChip, row, col, turn);
 			}
