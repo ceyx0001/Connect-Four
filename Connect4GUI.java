@@ -22,17 +22,8 @@ public class Connect4GUI extends JFrame {
 	DrawBoard goodBoard;
 
 	public static void main(String[] args) {
-
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Connect4GUI window = new Connect4GUI();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		Connect4GUI game = new Connect4GUI();
+		game.frame.setVisible(true);
 	}
 
 	/**
@@ -63,23 +54,18 @@ public class Connect4GUI extends JFrame {
 	Font verdana = new Font("Verdana", 1, 17);
 
 	public void titlePage() {
+		active = true;
 		selectionPanel.revalidate();
 		selectionPanel.repaint();
-
 		selectionPanel.add(space1);
-
 		selectionPanel.add(title);
 		title.setFont(new Font("Tahoma", Font.BOLD, 40));
 		title.setAlignmentX(Component.CENTER_ALIGNMENT);
-
 		selectionPanel.add(space2);
-
 		selectionPanel.add(instructions);
 		instructions.setFont(new Font("Verdana", Font.BOLD, 25));
 		instructions.setAlignmentX(Component.CENTER_ALIGNMENT);
-
 		selectionPanel.add(space3);
-
 		selectionPanel.add(single);
 		single.setFont(new Font("Verdana", Font.BOLD, 25));
 		single.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -88,9 +74,7 @@ public class Connect4GUI extends JFrame {
 				click();
 			}
 		});
-
 		selectionPanel.add(space4);
-
 		multi.setMinimumSize(new Dimension(93, 23));
 		multi.setMaximumSize(new Dimension(219, 40));
 		multi.setPreferredSize(new Dimension(93, 23));
@@ -106,15 +90,11 @@ public class Connect4GUI extends JFrame {
 
 	public void click() {
 		selectionPanel.removeAll();
-
 		selectionPanel.add(space1);
-
 		selectionPanel.add(chooseTurn);
 		chooseTurn.setFont(new Font("Verdana", Font.BOLD, 25));
 		chooseTurn.setAlignmentX(Component.CENTER_ALIGNMENT);
-
 		selectionPanel.add(space2);
-
 		selectionPanel.add(player1);
 		player1.setFont(new Font("Verdana", Font.BOLD, 25));
 		player1.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -124,9 +104,7 @@ public class Connect4GUI extends JFrame {
 				createBoard();
 			}
 		});
-
 		selectionPanel.add(space3);
-
 		selectionPanel.add(player2);
 		player2.setFont(new Font("Verdana", Font.BOLD, 25));
 		player2.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -136,21 +114,16 @@ public class Connect4GUI extends JFrame {
 				createBoard();
 			}
 		});
-
 		back.setFont(new Font("Stencil", Font.BOLD, 30));
 		back.setAlignmentX(Component.CENTER_ALIGNMENT);
-
 		selectionPanel.add(space5);
-
 		selectionPanel.add(back);
-
 		back.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				selectionPanel.removeAll();
 				titlePage();
 			}
 		});
-
 		selectionPanel.revalidate();
 		selectionPanel.repaint();
 	}
@@ -160,7 +133,6 @@ public class Connect4GUI extends JFrame {
 		frame.add(goodBoard);
 		frame.remove(selectionPanel);
 		frame.repaint();
-		frame.pack();
 		frame.setVisible(true);
 	}
 
@@ -171,11 +143,9 @@ public class Connect4GUI extends JFrame {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 		frame.setResizable(false);
-
 		frame.getContentPane().add(selectionPanel, BorderLayout.CENTER);
 		selectionPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		selectionPanel.setLayout(new BoxLayout(selectionPanel, BoxLayout.Y_AXIS));
-
 		titlePage();
 	}
 
@@ -189,6 +159,15 @@ public class Connect4GUI extends JFrame {
 		Color[][] grid = new Color[rows][cols];
 
 		public DrawBoard(Dimension dimension) {
+			JButton quit = new JButton("Quit");
+			quit.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					frame.dispose();
+					Connect4GUI game = new Connect4GUI();
+					game.frame.setVisible(true);
+				}
+			});
+			add(quit);
 			setSize(dimension);
 			setPreferredSize(dimension);
 			addMouseListener(this);
@@ -232,7 +211,7 @@ public class Connect4GUI extends JFrame {
 		}
 
 		public void mousePressed(MouseEvent e) {
-			if(!active) {
+			if (!active) {
 				return;
 			}
 			int x = e.getX();
@@ -243,21 +222,7 @@ public class Connect4GUI extends JFrame {
 			try {
 				if (gameBoard.checkWin(col, row, turn)) {
 					System.out.println("Player " + turn + " wins!");
-					finishGame.setFont(verdana);
-					finishGame.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							frame.remove(goodBoard);
-							frame.add(selectionPanel);
-							frame.revalidate();
-							frame.repaint();
-							active = true;
-							click();
-						}
-					});
 					active = false;
-					goodBoard.add(finishGame);
-					frame.revalidate();
-					frame.repaint();
 				}
 
 				if (row < 0) {
@@ -302,13 +267,11 @@ public class Connect4GUI extends JFrame {
 					return row;
 				}
 			}
-
 			if (turn == 1) {
 
 				Chip redChip = new Chip(1, row, col);
 				gameBoard.insertCoin(redChip, row, col, turn);
 			} else {
-
 				Chip yellowChip = new Chip(2, row, col);
 				gameBoard.insertCoin(yellowChip, row, col, turn);
 			}

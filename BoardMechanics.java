@@ -74,8 +74,16 @@ public class BoardMechanics {
                         vertical.add(board[initialY][initialX].getType());
                     }
                     
-                    if (horizontal.size() == 4|| vertical.size() == 4 || slopeUp.size() == 4 || slopeDown.size() == 4)
-                    {
+                    if (horizontal.size() == 4|| vertical.size() == 4 || slopeUp.size() == 4 || slopeDown.size() == 4) {
+                        horizontal.clear();
+                        vertical.clear();
+                        slopeDown.clear();
+                        slopeUp.clear();
+                        for (int r = 0; r < R; r++) {
+                            for (int c = 0; c < C; c++) {
+                                board[r][c] = null;
+                            }
+                        }
                         return true;
                     }
 
