@@ -1,73 +1,56 @@
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 
 public class BoardMechanics {
-    HashMap<Integer, LinkedList<Chip>> board = new HashMap<Integer, LinkedList<Chip>>();
-    LinkedList<Chip> vertical;
-    LinkedList<Chip> horizontal;
-    LinkedList<Chip> slopeDown;
-    LinkedList<Chip> slopeUp;
+    LinkedList<Chip> connectedFour = new LinkedList<Chip>();
+    int[] x = { -1, -1, -1, 0, 0, 1, 1, 1 };
+    int[] y = { -1, 0, 1, -1, 1, -1, 0, 1 };
+    final int R = 6;
+    final int C = 7;
+    Chip[][] board;
 
-    BoardMechanics() {
-        for (int i = 0; i < 7; i++) {
-            board.put(i, new LinkedList<Chip>());
-        }
+    public BoardMechanics() {
+        board = new Chip[R][C];
     }
 
-    public String insertCoin(Chip chip, int column, String turn) {
-        if (board.get(column).size() == 6) {
-            System.out.println("No spaces");
-            return turn;
-        } else {
-            chip.setRow(board.get(column).size());
-            board.get(column).add(chip);
-            if (turn.equals("Red")) {
-                turn = "Yellow";
-            } else if (turn.equals("Yellow")) {
-                turn = "Red";
+    public void insertCoin(Chip chip, int row, int column, int turn) {
+        board[row][column] = chip;
+        winner(column, row, turn);
+    }
+
+    public void winner(int initialX, int initialY, int turn) {
+        connectedFour.add(board[initialY][initialX]);
+
+        for (int directions = 0; directions < 8; directions++) {
+            int k;
+            int xDir = initialX + x[directions];
+            int yDir = initialY + y[directions];
+            for (k = 1; k < 4; k++) {
+                if (xDir >= C || xDir < 0 || yDir >= R || yDir < 0) {
+                    break;
+                }
+                if (board[yDir][xDir] != null) {
+                    System.out.println(yDir + " " + xDir);
+                    if (turn != board[yDir][xDir].getType()) {
+                        break;
+                    }
+                    if (directions == 0 || directions == 7) {
+                        connectedFour.add(board[yDir][xDir]);
+                    } else if (directions == 1 || directions == 6) {
+                        connectedFour.add(board[yDir][xDir]);
+                    } else if (directions == 2 || directions == 5) {
+                        connectedFour.add(board[yDir][xDir]);
+                    } else if (directions == 3 || directions == 4) {
+                        connectedFour.add(board[yDir][xDir]);
+                    }
+
+                    xDir += x[directions];
+                    yDir += y[directions];
+                }
             }
         }
-        return turn;
+        connectedFour.clear();
     }
 
-    public void connectChips(Chip chip) {
-        int row = chip.getRow();
-        int column = chip.getColumn();
-
-        vertical = board.get(column);
-        horizontal = new LinkedList<Chip>();
-        slopeDown = new LinkedList<Chip>();
-        slopeUp = new LinkedList<Chip>();
-
-        addHorizontal(horizontal, column, row);
-        addSlope(slopeUp, row, column, 1);
-    }
-
-    public void addHorizontal(LinkedList<Chip> horizontal, int column, int row) {
-        int c = 0;
-        horizontal.add(board.get(c++).get(row));
-    }
-
-    public void addSlope(LinkedList<Chip> slope, int row, int column, int dir) {
-        int r = row;
-        int c = column;
-        for (int i = 0; i < 4; i++) {
-            if (r < 6 || c < 0) {
-                break;
-            }
-            LinkedList<Chip> temp = board.get(c--);
-            slope.add(temp.get(r + dir));
-        }
-
-        r = row;
-        c = column;
-        for (int i = 0; i < 4; i++) {
-            if (r < 6 || c > 7) {
-                break;
-            }
-            LinkedList<Chip> temp = board.get(c++);
-            slope.add(temp.get(r + dir));
-        }
-        addSlope(slopeDown, row, column, -1);
-    }
 }

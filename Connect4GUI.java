@@ -1,13 +1,22 @@
 import javax.swing.*;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.awt.event.ActionEvent;
 import java.awt.*;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import java.awt.Dimension;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
 
-public class Connect4GUI extends JFrame implements ActionListener {
+public class Connect4GUI extends JFrame {
 	JFrame frame;
-	HashMap<Integer, LinkedList<Chip>> board = new HashMap<Integer, LinkedList<Chip>>();
+	private Color white = new Color(255, 255, 255);
+	private Color red = new Color(255, 0, 0);
+	private Color yellow = new Color(255, 255, 0);
+	private Color blue = new Color(87, 160, 211);
 	BoardMechanics gameBoard;
 
 	public static void main(String[] args) {
@@ -27,7 +36,7 @@ public class Connect4GUI extends JFrame implements ActionListener {
 	/**
 	 * Create the application.
 	 */
-	String turn = "";
+	int turn = 0;
 	JPanel selectionPanel = new JPanel();
 	JButton single = new JButton("Single Player");
 	JButton multi = new JButton("Multiplayer");
@@ -42,13 +51,10 @@ public class Connect4GUI extends JFrame implements ActionListener {
 	JButton player1 = new JButton("  Red  ");
 	JButton player2 = new JButton("Yellow");
 	JButton back = new JButton("Back");
-	//
 	JPanel coinPanel = new JPanel();
 	JPanel gamePanel = new JPanel();
 	JLabel boardImage = new JLabel("");
 	JButton[] drop = new JButton[7];
-	JLabel displayColor = new JLabel("");
-	JLabel displayTurn = new JLabel("Turn:");
 
 	public void titlePage() {
 		selectionPanel.revalidate();
@@ -108,8 +114,7 @@ public class Connect4GUI extends JFrame implements ActionListener {
 		player1.setAlignmentX(Component.CENTER_ALIGNMENT);
 		player1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				turn = "Red";
-				displayColor.setText(turn);
+				turn = 1;
 				createBoard();
 			}
 		});
@@ -121,8 +126,7 @@ public class Connect4GUI extends JFrame implements ActionListener {
 		player2.setAlignmentX(Component.CENTER_ALIGNMENT);
 		player2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				turn = "Yellow";
-				displayColor.setText(turn);
+				turn = 2;
 				createBoard();
 			}
 		});
@@ -146,53 +150,16 @@ public class Connect4GUI extends JFrame implements ActionListener {
 	}
 
 	public void createBoard() {
-		frame.getContentPane().add(gamePanel, BorderLayout.CENTER);
-		gamePanel.setBackground(new Color(240, 240, 240));
-		gamePanel.setLayout(null);
-
-		selectionPanel.removeAll();
-		selectionPanel.revalidate();
-
-		boardImage.setBounds(85, 110, 640, 480);
-		boardImage.setIcon(new ImageIcon("Images\\connectboard.png"));
-		gamePanel.add(boardImage);
-
-		displayTurn.setBackground(new Color(240, 240, 240));
-		displayTurn.setFont(new Font("Roboto", Font.PLAIN, 28));
-		displayTurn.setBounds(120, 600, 70, 60);
-		gamePanel.add(displayTurn);
-
-		displayColor.setFont(new Font("Roboto", Font.PLAIN, 28));
-		displayColor.setBounds(200, 600, 250, 60);
-		gamePanel.add(displayColor);
-
-		int height = 100;
-		int width = 90;
-		int x = 90;
-		int y = 11;
-		for (int i = 0; i < 7; i++) {
-			drop[i] = new JButton(Integer.toString(i + 1));
-			drop[i].setBounds(x, y, width, height);
-			drop[i].addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					Chip newChip = new Chip(turn);
-					turn = gameBoard.insertCoin(newChip, Integer.parseInt(e.getActionCommand()), turn);
-					displayColor.setText(turn);
-				}
-			});
-			gamePanel.add(drop[i]);
-			/*
-			 * drop[i].setOpaque(false); drop[i].setContentAreaFilled(false);
-			 * drop[i].setBorderPainted(false);
-			 */
-			x += 90;
-		}
+		frame.add(new DrawBoard(frame.getSize()));
+		frame.remove(selectionPanel);
+		frame.pack();
+		frame.setVisible(true);
 	}
 
 	public Connect4GUI() {
 		frame = new JFrame();
 		gameBoard = new BoardMechanics();
-		frame.setBounds(100, 100, 800, 700);
+		frame.setSize(700, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 		frame.setResizable(false);
@@ -204,8 +171,109 @@ public class Connect4GUI extends JFrame implements ActionListener {
 		titlePage();
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
+	public class DrawBoard extends JPanel implements MouseListener {
+		int startX = 0;
+		int startY = 0;
+		int cellWidth = 60;
+		final int rows = 6;
+		final int cols = 7;
 
+		Color[][] grid = new Color[rows][cols];
+
+		public DrawBoard(Dimension dimension) {
+			setSize(dimension);
+			setPreferredSize(dimension);
+			addMouseListener(this);
+			// 1. initialize array here
+			int x = 0;
+			for (int row = 0; row < grid.length; row++) {
+				for (int col = 0; col < grid[0].length; col++) {
+					grid[row][col] = white;
+				}
+			}
+		}
+
+		@Override
+		public void paintComponent(Graphics g) {
+			Font myFont = new Font("Verdana", 1, 17);
+			Graphics2D newGB = (Graphics2D) g;
+			Dimension d = getSize();
+			newGB.setColor(blue);
+			newGB.fillRect(0, 0, d.width, d.height);
+			// location of board
+			startX = 140;
+			startY = 100;
+
+			// 2) draw grid here
+			for (int row = 0; row < grid.length; row++) {
+				for (int col = 0; col < grid[0].length; col++) {
+					newGB.setColor(grid[row][col]);
+					newGB.fillOval(startX, startY, cellWidth, cellWidth);
+					startX += cellWidth;
+				}
+				startX = 140;
+				startY += cellWidth;
+			}
+
+			newGB.setFont (myFont);
+			newGB.setColor(white);
+			newGB.drawString(turn + "'s Turn", 10, 20);
+		}
+
+		public void mousePressed(MouseEvent e) {
+			int x = e.getX();
+			int y = e.getY();
+			int col = (x - 140) / cellWidth;
+			int row = getOpenSlot(col);
+			if (row < 0) {
+				System.out.println("Full Column");
+			} else {
+				if (turn == 1) {
+					grid[row][col] = red;
+					turn = 2;
+				} else {
+					grid[row][col] = yellow;
+					turn = 1;
+				}
+				// System.out.println(row + " " + col);
+			}
+			repaint();
+		}
+
+		public void mouseReleased(MouseEvent e) {
+
+		}
+
+		public void mouseEntered(MouseEvent e) {
+
+		}
+
+		public void mouseExited(MouseEvent e) {
+
+		}
+
+		public void mouseClicked(MouseEvent e) {
+
+		}
+
+		public int getOpenSlot(int col) {
+			int row = rows - 1;
+			while (!(grid[row][col].equals(white)) || row < 0) {
+				row--;
+				if (row < 0) {
+					return row;
+				}
+			}
+			if (turn == 1) {
+				System.out.println(row + " " + col);
+				Chip redChip = new Chip(1, row, col);
+				gameBoard.insertCoin(redChip, row, col, turn);
+			} else {
+				System.out.println(row + " " + col);
+				Chip yellowChip = new Chip(2, row, col);
+				gameBoard.insertCoin(yellowChip, row, col, turn);
+			}
+			return row;
+		}
 	}
 }
