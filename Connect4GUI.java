@@ -52,6 +52,7 @@ public class Connect4GUI extends JFrame {
 	JButton multi = new JButton("Multiplayer");
 	JLabel title = new JLabel("Connect 4");
 	JLabel instructions = new JLabel("Please Select a Game Mode");
+	JLabel ai = new JLabel("Coming Soon...");
 	Component space1 = Box.createVerticalStrut(150);
 	Component space2 = Box.createVerticalStrut(60);
 	Component space3 = Box.createVerticalStrut(75);
@@ -77,26 +78,31 @@ public class Connect4GUI extends JFrame {
 	 * create the title page
 	 */
 	public void titlePage() {
+		// as long as active, the board will accept input
 		active = true;
 		selectionPanel.revalidate();
 		selectionPanel.repaint();
 		selectionPanel.add(space1);
-		selectionPanel.add(title);
+		selectionPanel.add(title); // add the main title
 		title.setFont(new Font("Tahoma", Font.BOLD, 40));
 		title.setAlignmentX(Component.CENTER_ALIGNMENT);
 		selectionPanel.add(space2);
-		selectionPanel.add(instructions);
+		selectionPanel.add(instructions); // add the instructions
 		instructions.setFont(new Font("Verdana", Font.BOLD, 25));
 		instructions.setAlignmentX(Component.CENTER_ALIGNMENT);
 		selectionPanel.add(space3);
 		selectionPanel.add(single);
+		/**
+	 	*	setFont,setAlignment to make interface more user friendly
+	 	*/
 		single.setFont(new Font("Verdana", Font.BOLD, 25));
 		single.setAlignmentX(Component.CENTER_ALIGNMENT);
+
 		// single player button
 		single.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				AI = true;
-				click();
+				comingSoon();
 			}
 		});
 		selectionPanel.add(space4);
@@ -108,11 +114,33 @@ public class Connect4GUI extends JFrame {
 		// multiplayer button
 		multi.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				click();
+				click(); // user clicked on multiplayer
 			}
 		});
 		multi.setFont(new Font("Verdana", Font.BOLD, 25));
 	}
+
+	public void comingSoon()
+		{
+			selectionPanel.removeAll();
+			selectionPanel.add(space1);
+			selectionPanel.add(ai);
+			ai.setFont(new Font("Tahoma", Font.BOLD, 40));
+			ai.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+			back.setFont(new Font("Stencil", Font.BOLD, 30));
+			back.setAlignmentX(Component.CENTER_ALIGNMENT);
+			selectionPanel.add(space5);
+			selectionPanel.add(back); // add a back button to exit to title page
+			back.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				selectionPanel.removeAll();
+				titlePage();
+			}
+			});
+			selectionPanel.revalidate();
+			selectionPanel.repaint();
+		}
 
 	/**
 	 *	after clicking a button on title page
@@ -120,35 +148,35 @@ public class Connect4GUI extends JFrame {
 	 	player selects which color they want
 	 */
 	public void click() {
-		selectionPanel.removeAll();
+		selectionPanel.removeAll(); // remove all components from previous page
 		selectionPanel.add(space1);
-		selectionPanel.add(chooseTurn);
+		selectionPanel.add(chooseTurn); // add an instruction
 		chooseTurn.setFont(new Font("Verdana", Font.BOLD, 25));
 		chooseTurn.setAlignmentX(Component.CENTER_ALIGNMENT);
 		selectionPanel.add(space2);
-		selectionPanel.add(player1);
+		selectionPanel.add(player1); // add a "red" button
 		player1.setFont(new Font("Verdana", Font.BOLD, 25));
 		player1.setAlignmentX(Component.CENTER_ALIGNMENT);
 		player1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				turn = 1;
-				createBoard();
+				createBoard(); // when red is clicked, turn = 1
 			}
 		});
 		selectionPanel.add(space3);
-		selectionPanel.add(player2);
+		selectionPanel.add(player2); // add a "yellow" button
 		player2.setFont(new Font("Verdana", Font.BOLD, 25));
 		player2.setAlignmentX(Component.CENTER_ALIGNMENT);
 		player2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				turn = 2;
-				createBoard();
+				createBoard(); // when yellow is clicked, turn = 2
 			}
 		});
 		back.setFont(new Font("Stencil", Font.BOLD, 30));
 		back.setAlignmentX(Component.CENTER_ALIGNMENT);
 		selectionPanel.add(space5);
-		selectionPanel.add(back);
+		selectionPanel.add(back); // add a back button to exit to title page
 		back.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				selectionPanel.removeAll();
@@ -159,14 +187,21 @@ public class Connect4GUI extends JFrame {
 		selectionPanel.repaint();
 	}
 
+	/**
+	 * draws the connect 4 board
+	 */
 	public void createBoard() {
-		goodBoard = new DrawBoard(d);
+		goodBoard = new DrawBoard(d); // refer to DrawBoard class
 		frame.add(goodBoard);
 		frame.remove(selectionPanel);
 		frame.repaint();
 		frame.setVisible(true);
 	}
 
+	/**
+	 * Initializes the frame and container for game.
+	 * main method only runs this method
+	 */
 	public Connect4GUI() {
 		frame = new JFrame();
 		gameBoard = new BoardMechanics();
@@ -179,46 +214,54 @@ public class Connect4GUI extends JFrame {
 		selectionPanel.setLayout(new BoxLayout(selectionPanel, BoxLayout.Y_AXIS));
 		titlePage();
 	}
-
+	/**
+	 *	Create a Panel to put board in
+	 */
 	public class DrawBoard extends JPanel implements MouseListener {
 		/**
 		 * serialization
 		 */
 		private static final long serialVersionUID = 1L;
 
+		// variables to initialize board location
 		int startX = 0;
 		int startY = 0;
-		int cellWidth = 60;
+		int cellWidth = 60; // the size of the chips
 		final int rows = 6;
 		final int cols = 7;
 
+		// 2D array for storing chips
 		Color[][] grid = new Color[rows][cols];
 
+		// implement a quit button to exit to title page
+		// can be clicked anytime 
 		public DrawBoard(Dimension dimension) {
 			JButton quit = new JButton("Quit");
 			quit.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					frame.dispose();
-					Connect4GUI game = new Connect4GUI();
+					frame.dispose(); // delete the current frame
+					Connect4GUI game = new Connect4GUI(); // recall a new connect 4 game method
 					game.frame.setVisible(true);
 				}
 			});
-			add(quit);
+			add(quit); // add button to panel
 			setSize(dimension);
 			setPreferredSize(dimension);
 			addMouseListener(this);
-			// 1. initialize array here
+			// change each slot on the board to white
 			for (int row = 0; row < grid.length; row++) {
 				for (int col = 0; col < grid[0].length; col++) {
 					grid[row][col] = white;
 				}
 			}
 		}
-
+		/**
+	 	*	fill the board with colors
+	 	*/
 		@Override
 		public void paintComponent(Graphics g) {
-			Graphics2D newGB = (Graphics2D) g;
-			Dimension d = getSize();
+			Graphics2D newGB = (Graphics2D) g; // declare the board
+			Dimension d = getSize(); // initialize its size
 			newGB.setColor(blue);
 			newGB.fillRect(0, 0, d.width, d.height);
 			// location of board
@@ -226,6 +269,7 @@ public class Connect4GUI extends JFrame {
 			startY = 100;
 
 			// 2) draw grid here
+			// iterate through each row, then add a 6 white circles with size cellWidth
 			for (int row = 0; row < grid.length; row++) {
 				for (int col = 0; col < grid[0].length; col++) {
 					newGB.setColor(grid[row][col]);
@@ -235,17 +279,19 @@ public class Connect4GUI extends JFrame {
 				startX = 140;
 				startY += cellWidth;
 			}
-
+			/**
+	 		*	Display the state of the game
+	 		*/
 			newGB.setFont(verdana);
 			newGB.setColor(white);
-			if (win) {
+			if (win) { // will display who wins if true
 				if (turn == 1) {
 					newGB.drawString("Red wins!", 10, 20);
 				} else {
 					newGB.drawString("Yellow wins!", 10, 20);
 				}
 				repaint();
-			} else if (draw) {
+			} else if (draw) { // display draw if no more moves are avalaible
 				newGB.drawString("Draw!", 10, 20);
 			} else if (turn == 1) {
 				newGB.drawString("Red's Turn", 10, 20);
@@ -254,34 +300,38 @@ public class Connect4GUI extends JFrame {
 			}
 
 		}
-
+		/**
+	 	*	Insert coins when mouse is pressed at certain locations	
+		*/
 		public void mousePressed(MouseEvent e) {
-			if (!active) {
+			if (!active) { // if active is false, the game is paused 
 				return;
 			}
-			int x = e.getX();
-			int col = (x - 140) / cellWidth;
+			int x = e.getX(); // get the x value of the mouse click
+			int col = (x - 140) / cellWidth; // use the x value to calculate the column
 
+			// when clicked on somewhere outside of board, catch the exception
 			try {
-				int row = getOpenSlot(col);
+				int row = getOpenSlot(col); // call method that will get the available row of the column
 
-				win = gameBoard.checkWin(col, row, turn);
-				draw = gameBoard.checkDraw();
+				win = gameBoard.checkWin(col, row, turn); // if the next chip makes 4 in a row, set win to true
+				draw = gameBoard.checkDraw(); // store true if no more moves are available
 				if (win || draw) {
-					active = false;
+					active = false; // pause the game if either draw or win are true
 				}
+				// if there are no more spaces available in column, display the restriction
 				if (row < 0) {
 					System.out.println("Full Column");
 				} else {
 					if (turn == 1) {
-						grid[row][col] = red;
+						grid[row][col] = red; // add red if turn = 1
 						if (!win) {
-							turn = 2;
+							turn = 2; // change turn
 						}
 					} else {
-						grid[row][col] = yellow;
+						grid[row][col] = yellow; // add yellow if turn = 2
 						if (!win) {
-							turn = 1;
+							turn = 1; // change turn
 						}
 					}
 				}
@@ -309,17 +359,18 @@ public class Connect4GUI extends JFrame {
 		}
 
 		public int getOpenSlot(int col) {
-			int row = rows - 1;
+			int row = rows - 1; // -1 to prevent array out of bounds
 
+			// checks if the slot has a chip
 			while (!(grid[row][col].equals(white)) || row < 0) {
-				row--;
+				row--; 
 				if (row < 0) {
-					return row;
+					return row; // get row if a slot is open
 				}
 			}
 			if (turn == 1) {
 
-				Chip redChip = new Chip(1, row, col);
+				Chip redChip = new Chip(1, row, col); 
 				gameBoard.insertCoin(redChip, row, col, turn);
 			} else {
 				Chip yellowChip = new Chip(2, row, col);
