@@ -1,52 +1,54 @@
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 public class BoardMechanics {
-    LinkedList<Chip> connectedFour = new LinkedList<Chip>();
     int[] x = { -1, -1, -1, 0, 0, 1, 1, 1 };
     int[] y = { -1, 0, 1, -1, 1, -1, 0, 1 };
     final int R = 6;
     final int C = 7;
+    int moves = 42;
     Chip[][] board;
-    /*int[][] boardRed;
-    int[][] boardYellow;
-    long TOP = 0b0000000001000000100000010000001000000000000000000L;
-    private static long[] bitBoard = new long[2];
-    private static int[] height = {0, 0, 0, 0, 0, 0, 0};*/
+    /*
+     * int[][] boardRed; int[][] boardYellow; long TOP =
+     * 0b0000000001000000100000010000001000000000000000000L; private static long[]
+     * bitBoard = new long[2]; private static int[] height = {0, 0, 0, 0, 0, 0, 0};
+     */
 
     public BoardMechanics() {
         board = new Chip[R][C];
-        /*boardRed = new int[R][C];
-        boardYellow = new int[R][C];*/
+        /*
+         * boardRed = new int[R][C]; boardYellow = new int[R][C];
+         */
     }
-
 
     public void insertCoin(Chip chip, int row, int column, int turn) {
+        moves--;
         board[row][column] = chip;
-        /*long move = 1L << height[column]++;
-        bitBoard[turn-1] ^= move; 
-        if(isWin(bitBoard[turn-1])) {
-            System.out.println(true);
-        }*/
+        /*
+         * long move = 1L << height[column]++; bitBoard[turn-1] ^= move;
+         * if(isWin(bitBoard[turn-1])) { System.out.println(true); }
+         */
     }
 
-    /*public boolean isWin(long bitboard) {
-        int[] directions = { 1, 7, 6, 8 };
-        long bb;
-        for (int direction : directions) {
-            bb = bitboard & (bitboard >> direction);
-            if ((bb & (bb >> (2 * direction))) != 0)
-                return true;
+    /*
+     * public boolean isWin(long bitboard) { int[] directions = { 1, 7, 6, 8 }; long
+     * bb; for (int direction : directions) { bb = bitboard & (bitboard >>
+     * direction); if ((bb & (bb >> (2 * direction))) != 0) return true; } return
+     * false; }
+     */
+    public boolean checkDraw() {
+        System.out.println("Moves left: " + moves);
+        if (moves == 0) {
+            return true;
         }
         return false;
-    }*/
+    }
 
     public boolean checkWin(int initialX, int initialY, int turn) {
-        ArrayList<Integer>horizontal= new ArrayList<Integer>();
-        ArrayList<Integer>vertical= new ArrayList<Integer>();
-        ArrayList<Integer>slopeDown= new ArrayList<Integer>();
-        ArrayList<Integer>slopeUp= new ArrayList<Integer>();
-        
+        ArrayList<Integer> horizontal = new ArrayList<Integer>();
+        ArrayList<Integer> vertical = new ArrayList<Integer>();
+        ArrayList<Integer> slopeDown = new ArrayList<Integer>();
+        ArrayList<Integer> slopeUp = new ArrayList<Integer>();
+
         horizontal.add(board[initialY][initialX].getType());
         vertical.add(board[initialY][initialX].getType());
         slopeDown.add(board[initialY][initialX].getType());
@@ -73,8 +75,9 @@ public class BoardMechanics {
                     } else if (directions == 3 || directions == 4) {
                         vertical.add(board[initialY][initialX].getType());
                     }
-                    
-                    if (horizontal.size() == 4|| vertical.size() == 4 || slopeUp.size() == 4 || slopeDown.size() == 4) {
+
+                    if (horizontal.size() == 4 || vertical.size() == 4 || slopeUp.size() == 4
+                            || slopeDown.size() == 4) {
                         horizontal.clear();
                         vertical.clear();
                         slopeDown.clear();
@@ -84,6 +87,7 @@ public class BoardMechanics {
                                 board[r][c] = null;
                             }
                         }
+                        moves = 42;
                         return true;
                     }
 

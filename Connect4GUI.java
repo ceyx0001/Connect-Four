@@ -12,14 +12,10 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 
 public class Connect4GUI extends JFrame {
-	JFrame frame;
-	private boolean active = true;
-	private Color white = new Color(255, 255, 255);
-	private Color red = new Color(255, 0, 0);
-	private Color yellow = new Color(255, 255, 0);
-	private Color blue = new Color(87, 160, 211);
-	BoardMechanics gameBoard;
-	DrawBoard goodBoard;
+	/**
+	 * serialization
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public static void main(String[] args) {
 		Connect4GUI game = new Connect4GUI();
@@ -27,9 +23,28 @@ public class Connect4GUI extends JFrame {
 	}
 
 	/**
-	 * Create the application.
+	 * Components used to create the board and interface
 	 */
-	int turn = 0;
+	JFrame frame;
+	private boolean active = true; // determines whether the board should be operating
+	/**
+	 * colors used to create the chips and board
+	 */
+	private Color white = new Color(255, 255, 255);
+	private Color red = new Color(255, 0, 0);
+	private Color yellow = new Color(255, 255, 0);
+	private Color blue = new Color(87, 160, 211);
+
+	/**
+	 * Board Mechanics determines who wins and adds chips to board DrawBoard creates
+	 * the connect 4 baord
+	 */
+	BoardMechanics gameBoard;
+	DrawBoard goodBoard;
+
+	/**
+	 * components needed to display images, texts, and fonts
+	 */
 	JPanel selectionPanel = new JPanel();
 	JPanel endPanel = new JPanel();
 	JButton finishGame = new JButton("Exit to main menu");
@@ -53,6 +68,14 @@ public class Connect4GUI extends JFrame {
 	Dimension d = new Dimension(700, 600);
 	Font verdana = new Font("Verdana", 1, 17);
 
+	int turn = 0; // alternates between 1 and 0
+	boolean win;
+	boolean draw;
+	boolean AI = false;
+
+	/**
+	 * create the title page
+	 */
 	public void titlePage() {
 		active = true;
 		selectionPanel.revalidate();
@@ -69,8 +92,10 @@ public class Connect4GUI extends JFrame {
 		selectionPanel.add(single);
 		single.setFont(new Font("Verdana", Font.BOLD, 25));
 		single.setAlignmentX(Component.CENTER_ALIGNMENT);
+		// single player button
 		single.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				AI = true;
 				click();
 			}
 		});
@@ -80,6 +105,7 @@ public class Connect4GUI extends JFrame {
 		multi.setPreferredSize(new Dimension(93, 23));
 		selectionPanel.add(multi);
 		multi.setAlignmentX(Component.CENTER_ALIGNMENT);
+		// multiplayer button
 		multi.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				click();
@@ -88,6 +114,11 @@ public class Connect4GUI extends JFrame {
 		multi.setFont(new Font("Verdana", Font.BOLD, 25));
 	}
 
+	/**
+	 *	after clicking a button on title page
+
+	 	player selects which color they want
+	 */
 	public void click() {
 		selectionPanel.removeAll();
 		selectionPanel.add(space1);
@@ -150,6 +181,11 @@ public class Connect4GUI extends JFrame {
 	}
 
 	public class DrawBoard extends JPanel implements MouseListener {
+		/**
+		 * serialization
+		 */
+		private static final long serialVersionUID = 1L;
+
 		int startX = 0;
 		int startY = 0;
 		int cellWidth = 60;
@@ -172,7 +208,6 @@ public class Connect4GUI extends JFrame {
 			setPreferredSize(dimension);
 			addMouseListener(this);
 			// 1. initialize array here
-			int x = 0;
 			for (int row = 0; row < grid.length; row++) {
 				for (int col = 0; col < grid[0].length; col++) {
 					grid[row][col] = white;
@@ -203,11 +238,21 @@ public class Connect4GUI extends JFrame {
 
 			newGB.setFont(verdana);
 			newGB.setColor(white);
-			if (turn == 1) {
+			if (win) {
+				if (turn == 1) {
+					newGB.drawString("Red wins!", 10, 20);
+				} else {
+					newGB.drawString("Yellow wins!", 10, 20);
+				}
+				repaint();
+			} else if (draw) {
+				newGB.drawString("Draw!", 10, 20);
+			} else if (turn == 1) {
 				newGB.drawString("Red's Turn", 10, 20);
 			} else if (turn == 2) {
 				newGB.drawString("Yellow's Turn", 10, 20);
 			}
+
 		}
 
 		public void mousePressed(MouseEvent e) {
@@ -215,32 +260,36 @@ public class Connect4GUI extends JFrame {
 				return;
 			}
 			int x = e.getX();
-			int y = e.getY();
 			int col = (x - 140) / cellWidth;
-			int row = getOpenSlot(col);
 
 			try {
-				if (gameBoard.checkWin(col, row, turn)) {
-					System.out.println("Player " + turn + " wins!");
+				int row = getOpenSlot(col);
+
+				win = gameBoard.checkWin(col, row, turn);
+				draw = gameBoard.checkDraw();
+				if (win || draw) {
 					active = false;
 				}
-
 				if (row < 0) {
 					System.out.println("Full Column");
 				} else {
 					if (turn == 1) {
 						grid[row][col] = red;
-						turn = 2;
+						if (!win) {
+							turn = 2;
+						}
 					} else {
 						grid[row][col] = yellow;
-						turn = 1;
+						if (!win) {
+							turn = 1;
+						}
 					}
-					// System.out.println(row + " " + col);
 				}
-				repaint();
 			} catch (IndexOutOfBoundsException exception) {
-				System.out.println("Null Click");
 			}
+
+			repaint();
+
 		}
 
 		public void mouseReleased(MouseEvent e) {
@@ -261,6 +310,7 @@ public class Connect4GUI extends JFrame {
 
 		public int getOpenSlot(int col) {
 			int row = rows - 1;
+
 			while (!(grid[row][col].equals(white)) || row < 0) {
 				row--;
 				if (row < 0) {
@@ -275,6 +325,7 @@ public class Connect4GUI extends JFrame {
 				Chip yellowChip = new Chip(2, row, col);
 				gameBoard.insertCoin(yellowChip, row, col, turn);
 			}
+
 			return row;
 		}
 	}
